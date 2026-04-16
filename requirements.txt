@@ -1,0 +1,21 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+alembic
+python-dotenv
+pydantic-settings
+python-jose[cryptography]
+passlib[bcrypt]
+asyncpg
+python-multipart
+
+pandas
+openpyxl
+
+scikit-learn           # Para TfidfVectorizer y cosine_similarity
+scipy                  # Para manejar matrices dispersas (save_npz/load_npz)
+spacy                  # Para lematización
+joblib                 # Para guardar/cargar vectorizadores
+numpy                  # Para manejo de arrays (aunque pandas ya la trae, mejor explicitarla)
+unidecode
