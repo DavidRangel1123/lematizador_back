@@ -2,7 +2,7 @@ SEPARACIONES = {
     "abdomenplastia": "abdomen plastia",
     "abdominoplastia": "abdomen plastia",
     "abdominoplastlia": "abdomen plastia",
-    "abotonadocolor": "abotonado color",
+    "abotonadocolor": "abrigo color",
     "abrigocolor": "abotonadocolor / abotonado color",
     "acicatriz": "a cicatriz",
     "adidasnegrar": "adidas negra",
