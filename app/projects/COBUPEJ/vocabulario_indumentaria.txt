@@ -1184,7 +1184,7 @@ cden
 cdena
 cdhamarra
 cdhico
-cdros
+cdro
 cduero
 ce
 cebetis
@@ -1432,7 +1432,6 @@ cmaisa
 cn
 cnegro
 cnta
-co
 coach
 cobaej
 cobbe
@@ -4811,6 +4810,7 @@ pv
 ql
 qu
 quaker
+que
 quebrado
 quedar
 queen
@@ -5798,7 +5798,6 @@ ubicado
 uda
 udadero
 udg
-ue
 uhn
 ultasonido
 ultimo

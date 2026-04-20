@@ -6,4 +6,12 @@ CORRECCIONES_GENERALES = {
     "ltra": "otra",
     "ltura": "altura",
     "ocacionado": "ocasion",
+    "ua": "una",
+    "uan": "una",
+    "uans": "una",
+    "ue": "que",
+    "uino": "uno",
+    "uma": "unas",
+    "unb": "un",
+    "unha": "unas",
 }
