@@ -25,15 +25,6 @@ RUN pip install --upgrade pip \
 RUN python -m spacy download es_core_news_md
 
 # Crear directorio keys
-RUN mkdir -p /app/keys
-
-# COPIAR el archivo de clave pública
-COPY keys/public_key.pem /app/keys/public_key.pem
-
-# Verificar que se copió correctamente
-RUN ls -la /app/keys/ && \
-    file /app/keys/public_key.pem && \
-    cat /app/keys/public_key.pem | head -5
 
 # Copiar el resto del código
 COPY . .
