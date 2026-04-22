@@ -8,9 +8,6 @@ services:
       - lematizador_net
     env_file:
       - .env
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
       - .:/app
     command: >
