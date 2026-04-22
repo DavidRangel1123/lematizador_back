@@ -33,8 +33,7 @@ COPY . .
 COPY /app/vectores/ /app/vectores/
 
 # Cambiar permisos del directorio
-RUN chown -R appuser:appuser /app && \
-    chmod 644 /app/keys/public_key.pem
+RUN chown -R appuser:appuser /app
 
 # Cambiar a usuario no-root
 USER appuser
