@@ -2,19 +2,16 @@ SEPARACIONES = {
     "abdomenplastia": "abdomen plastia",
     "abdominoplastia": "abdomen plastia",
     "abdominoplastlia": "abdomen plastia",
-    "abotonadocolor": "abrigo color",
-    "abrigocolor": "abotonadocolor / abotonado color",
+    "abrigocolor": "abrigo color",
     "acaus": "a causa",
     "acausa": "a causa",
     "acicatriz": "a cicatriz",
-<<<<<<< HEAD
-    "adidasnegrar": "adidas negra",
-    "agujetasy": "agujeta y",
-=======
     "acneen": "acne en",
+    "acuadro": "a cuadros",
     "adicciona": "addicion a",
+    "adidasnegra": "adidas negra",
     "afrente": "la frente",
->>>>>>> 6fb5a76d507dd73a531db7ad833b2777b315c33b
+    "agujetasy": "agujeta y",
     "aimagen": "a imagen",
     "alado": "a lado",
     "alargadosy": "alargado y",
