@@ -10,12 +10,7 @@ from fastapi import (
     Request,
     Body,
 )
-from app.core.security import get_current_user
 from typing import Dict, Any, List
-
-# from app.services.queries import Queries
-from app.db.database import get_db
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # from app.services.vectorizador import VECTORIZADORES
 import logging

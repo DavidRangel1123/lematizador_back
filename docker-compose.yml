@@ -3,19 +3,15 @@ services:
     build: .
     container_name: lematizador
     ports:
-      - "8010:8000"  # Expone el puerto 8010 del host al 8000 del contenedor
+      - "8010:8000" # Expone el puerto 8010 del host al 8000 del contenedor
     networks:
       - lematizador_net
     env_file:
       - .env
-    depends_on:
-      db:
-        condition: service_healthy
     volumes:
       - .:/app
     command: >
-      sh -c "alembic upgrade head &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+      sh -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 10s
@@ -23,27 +19,6 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
-
-  db:
-    image: postgres:16
-    container_name: lematizador_db
-    restart: unless-stopped
-    networks:
-      - lematizador_net
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [
-        "CMD-SHELL",
-        "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
-      ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 volumes:
   postgres_data:
