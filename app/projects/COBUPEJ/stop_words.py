@@ -1,1 +1,3 @@
-STOP_WORDS = {}
+STOP_WORDS = [
+    'contener'
+]

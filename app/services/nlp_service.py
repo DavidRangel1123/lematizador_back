@@ -246,10 +246,11 @@ class NLPService:
 
         # Vectorizar
         logger.info("Configurando vectorizadores...")
-        stop_words = list(self.config.get("stop_words", {}).keys())
+        stop_words = list(self.config.get("stop_words", {}))
 
         config_vectorizador = {
             # "max_features": 10000,
+            # "ngram_range": (1, 2),
             "lowercase": True,
             "stop_words": stop_words if stop_words else None,
             "token_pattern": r"(?u)\b[a-záéíóúñ&]{1,}\b",
@@ -414,7 +415,7 @@ class NLPService:
         logger.info("Vocabularios .npy guardados")
 
         # Obtener stop words de la configuración
-        stop_words = list(self.config.get("stop_words", {}).keys())
+        stop_words = list(self.config.get("stop_words", {}))
 
         # Crear metadata
         metadata = {

@@ -136,88 +136,6 @@ class ProjectService:
             and project_session.get_current_project_id() == project_id,
         }
 
-    def procesar_dataframe(self, df: pd.DataFrame) -> Tuple:
-        """
-        Procesa el dataframe con las columnas 'corporal' e 'indumentaria'.
-        """
-        logger.info("Iniciando procesamiento de NLP...")
-
-        # Limpiar textos
-        diccionario_compuestos = self._normalizar_diccionario_compuestos()
-
-        logger.info("Aplicando limpieza básica...")
-        df["corporal_limpio"] = df["corporal"].apply(
-            lambda x: self.limpiar_texto(x, diccionario_compuestos)
-        )
-        df["indumentaria_limpio"] = df["indumentaria"].apply(
-            lambda x: self.limpiar_texto(x, diccionario_compuestos)
-        )
-        logger.info("Limpieza básica completada")
-
-        # Lematizar
-        logger.info("Aplicando lematización...")
-        df["corporal_lematizado"] = df["corporal_limpio"].apply(
-            lambda x: self.procesar_texto_unificado(x, tipo_dominio="corporal")
-        )
-        df["indumentaria_lematizado"] = df["indumentaria_limpio"].apply(
-            lambda x: self.procesar_texto_unificado(x, tipo_dominio="indumentaria")
-        )
-        logger.info("Lematización completada")
-
-        # Vectorizar
-        logger.info("Configurando vectorizadores...")
-        stop_words = list(self.config.get("stop_words", {}).keys())
-
-        config_vectorizador = {
-            "max_features": 10000,
-            "lowercase": True,
-            "stop_words": stop_words if stop_words else None,
-            "token_pattern": r"(?u)\b[a-zA-Záéíóúñ&]{1,}\b",
-            "strip_accents": "unicode",
-            "norm": "l2",
-            "use_idf": True,
-            "smooth_idf": True,
-            "sublinear_tf": True,
-        }
-
-        vectorizador_corporal = TfidfVectorizer(**config_vectorizador)
-        vectorizador_indumentaria = TfidfVectorizer(**config_vectorizador)
-
-        logger.info("Vectorizando textos...")
-        vectores_corporales = vectorizador_corporal.fit_transform(
-            df["corporal_lematizado"]
-        )
-        vectores_indumentaria = vectorizador_indumentaria.fit_transform(
-            df["indumentaria_lematizado"]
-        )
-
-        logger.info(
-            f"Corporal - Documentos: {vectores_corporales.shape[0]}, Términos: {vectores_corporales.shape[1]}"
-        )
-        logger.info(
-            f"Indumentaria - Documentos: {vectores_indumentaria.shape[0]}, Términos: {vectores_indumentaria.shape[1]}"
-        )
-
-        # Obtener palabras del vocabulario
-        logger.info("Obteniendo palabras del vocabulario...")
-        palabras_corporal = vectorizador_corporal.get_feature_names_out().tolist()
-        palabras_indumentaria = (
-            vectorizador_indumentaria.get_feature_names_out().tolist()
-        )
-        logger.info(
-            f"Palabras corporal: {len(palabras_corporal)}, Indumentaria: {len(palabras_indumentaria)}"
-        )
-
-        return (
-            df,
-            vectorizador_corporal,
-            vectorizador_indumentaria,
-            vectores_corporales,
-            vectores_indumentaria,
-            palabras_corporal,
-            palabras_indumentaria,
-        )
-
     def process_and_vectorize(self, project_id: str) -> dict:
         """
         Procesa el archivo _lematizable.csv del proyecto y genera vectorizadores.
@@ -325,23 +243,9 @@ class ProjectService:
         Agrega correcciones a los archivos de configuración del proyecto.
         """
         try:
-            results = self.file_utils.add_correcciones(project_id, correcciones)
-
-            # Agrupar resultados por tipo de acción
-            grouped = {}
-            for r in results:
-                action = r["action"]
-                if action not in grouped:
-                    grouped[action] = []
-                grouped[action].append(
-                    {"word": r["word"], "correction": r["correction"]}
-                )
-
+            self.file_utils.add_correcciones(project_id, correcciones)
             return {
-                "project_id": project_id,
-                "total_correcciones": len(results),
-                "por_tipo": grouped,
-                "detalles": results,
+                "success": True,
             }
 
         except Exception as e:
@@ -414,7 +318,7 @@ class ProjectService:
         )
 
         # Crear metadata
-        stop_words = list(self.config.get("stop_words", {}).keys())
+        stop_words = list(self.config.get("stop_words", {}))
 
         metadata = {
             "fecha_creacion": datetime.now().isoformat(),

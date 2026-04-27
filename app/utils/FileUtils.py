@@ -189,29 +189,26 @@ class FileUtils:
             "palabras": palabras,
         }
 
-    def _read_config_file(self, file_path: str) -> Dict[str, Any]:
-        """
-        Lee un archivo de configuración Python y retorna el diccionario.
-        """
+    def _read_config_file(self, file_path):
+        """Lee un archivo de configuración Python y retorna el objeto (dict o list)."""
         if not os.path.exists(file_path):
-            return {}
+            return None
 
         with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
-        # Buscar el diccionario en el contenido
-        # Asume que la variable tiene el mismo nombre que el archivo (en mayúsculas)
-        import re
+        # Buscar el signo = y evaluar lo que sigue
+        if "=" in content:
+            var_value = content.split("=", 1)[1].strip()
+            # Evaluar de forma segura
+            import ast
 
-        match = re.search(r"(\w+)\s*=\s*({[^}]*})", content, re.DOTALL)
-        if match:
-            var_name = match.group(1)
-            dict_str = match.group(2)
             try:
-                return ast.literal_eval(dict_str)
+                return ast.literal_eval(var_value)
             except:
-                return {}
-        return {}
+                # Si falla, retornar None
+                return None
+        return None
 
     def _write_config_file(
         self, file_path: str, var_name: str, data: Dict[str, str]
@@ -231,7 +228,7 @@ class FileUtils:
             f.write(content)
 
     def add_correccion(
-        self, project_id: str, word: str, action: str, correction: str
+        self, project_id: str, word: str, action: str, correction: str = None
     ) -> dict:
         """
         Agrega una corrección al archivo correspondiente del proyecto.
@@ -240,7 +237,7 @@ class FileUtils:
             project_id: ID del proyecto
             word: Palabra a corregir
             action: Tipo de acción (separacion, stop-word, general, corporal, indumentaria)
-            correction: Corrección a aplicar
+            correction: Corrección a aplicar (no necesaria para stop-word)
 
         Returns:
             Dict con el resultado de la operación
@@ -249,19 +246,30 @@ class FileUtils:
 
         # Mapeo de acciones a archivos y nombres de variables
         mapping = {
-            "separacion": {"file": "separaciones.py", "var_name": "SEPARACIONES"},
-            "stop-word": {"file": "stop_words.py", "var_name": "STOP_WORDS"},
+            "separacion": {
+                "file": "separaciones.py",
+                "var_name": "SEPARACIONES",
+                "is_list": False,
+            },
+            "stop-word": {
+                "file": "stop_words.py",
+                "var_name": "STOP_WORDS",
+                "is_list": True,
+            },
             "general": {
                 "file": "correcciones_generales.py",
                 "var_name": "CORRECCIONES_GENERALES",
+                "is_list": False,
             },
             "corporal": {
                 "file": "correcciones_corporal.py",
                 "var_name": "CORRECCIONES_CORPORAL",
+                "is_list": False,
             },
             "indumentaria": {
                 "file": "correcciones_indumentaria.py",
                 "var_name": "CORRECCIONES_INDUMENTARIA",
+                "is_list": False,
             },
         }
 
@@ -271,23 +279,50 @@ class FileUtils:
         config = mapping[action]
         file_path = os.path.join(project_path, config["file"])
         var_name = config["var_name"]
+        is_list = config["is_list"]
 
-        # Leer el archivo existente o crear diccionario vacío
-        current_dict = self._read_config_file(file_path)
+        # Leer el archivo existente
+        current_data = self._read_config_file(file_path)
 
-        # Agregar o actualizar la corrección
-        current_dict[word] = correction
+        if is_list:
+            # Para stop_words, trabajar como lista
+            if current_data is None:
+                current_data = []
 
-        # Escribir el archivo actualizado
-        self._write_config_file(file_path, var_name, current_dict)
+            # Agregar la palabra si no existe
+            if word not in current_data:
+                current_data.append(word)
 
-        return {
-            "project_id": project_id,
-            "action": action,
-            "word": word,
-            "correction": correction,
-            "file_updated": config["file"],
-        }
+            # Ordenar para consistencia
+            current_data.sort()
+
+            # Escribir como lista
+            self._write_config_file_as_list(file_path, var_name, current_data)
+
+            return {
+                "project_id": project_id,
+                "action": action,
+                "word": word,
+                "file_updated": config["file"],
+            }
+        else:
+            # Para los demás, trabajar como diccionario
+            if correction is None:
+                raise ValueError(f"Se requiere 'correction' para la acción '{action}'")
+
+            if current_data is None:
+                current_data = {}
+
+            current_data[word] = correction
+            self._write_config_file_as_dict(file_path, var_name, current_data)
+
+            return {
+                "project_id": project_id,
+                "action": action,
+                "word": word,
+                "correction": correction,
+                "file_updated": config["file"],
+            }
 
     def add_correcciones(
         self, project_id: str, correcciones: List[Dict[str, str]]
@@ -339,3 +374,15 @@ class FileUtils:
         file_path = os.path.join(project_path, f"{project_id}{suffix}.csv")
         df.to_csv(file_path, index=False)
         return file_path
+
+    def _write_config_file_as_dict(self, file_path, var_name, data_dict):
+        """Escribe un archivo de configuración con un diccionario."""
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(f"{var_name} = {repr(data_dict)}\n")
+
+    def _write_config_file_as_list(self, file_path, var_name, data_list):
+        """Escribe un archivo de configuración con una lista."""
+        # Formatear la lista de forma legible
+        list_repr = "[\n    " + ",\n    ".join(repr(item) for item in data_list) + "\n]"
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(f"{var_name} = {list_repr}\n")
