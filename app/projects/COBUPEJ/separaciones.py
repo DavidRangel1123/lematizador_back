@@ -7,14 +7,9 @@ SEPARACIONES = {
     "acaus": "a causa",
     "acausa": "a causa",
     "acicatriz": "a cicatriz",
-<<<<<<< HEAD
-    "adidasnegrar": "adidas negra",
-    "agujetasy": "agujeta y",
-=======
     "acneen": "acne en",
     "adicciona": "addicion a",
     "afrente": "la frente",
->>>>>>> 6fb5a76d507dd73a531db7ad833b2777b315c33b
     "aimagen": "a imagen",
     "alado": "a lado",
     "alargadosy": "alargado y",
