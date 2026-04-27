@@ -13,6 +13,7 @@ from scipy.sparse import save_npz
 import json
 from datetime import datetime
 import os
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +22,23 @@ class NLPService:
     def __init__(self, project_path: str, nlp_model):
         """
         Inicializa el servicio de NLP para un proyecto específico.
-
-        Args:
-            project_path: Ruta de la carpeta del proyecto
-            nlp_model: Modelo de spaCy cargado
         """
+        logger.info(f"NLPService.__init__ iniciando con project_path: {project_path}")
+
         self.project_path = project_path
         self.nlp = nlp_model
-        self.config = self._load_config_files()
+        logger.info("Atributos básicos asignados")
+
+        try:
+            logger.info("Cargando archivos de configuración...")
+            self.config = self._load_config_files()
+            logger.info(f"Configuración cargada. Keys: {list(self.config.keys())}")
+        except Exception as e:
+            logger.error(f"Error en _load_config_files: {str(e)}")
+            logger.error(traceback.format_exc())
+            raise
+
+        logger.info("NLPService.__init__ completado")
 
     def _load_config_files(self) -> Dict:
         """Carga los archivos de configuración del proyecto."""
@@ -176,7 +186,7 @@ class NLPService:
                     # Correcciones específicas del dominio
                     if lema in correcciones_dominio:
                         lema = correcciones_dominio[lema]
-                    if texto_original in correcciones_dominio:
+                    elif texto_original in correcciones_dominio:
                         lema = correcciones_dominio[texto_original]
 
                 tokens_procesados.append(lema)
@@ -187,6 +197,18 @@ class NLPService:
         resultado = unidecode(resultado)
 
         return resultado
+
+    def clean_nulls(self, df: pd.DataFrame) -> pd.DataFrame:
+        mascara_con_datos = df["corporal"].notna() & (df["corporal"] != "") | df[
+            "indumentaria"
+        ].notna() & (df["indumentaria"] != "")
+
+        df_inicial_filtrado = df[mascara_con_datos].copy()
+        logger.info(f"Longitud Original: {len(df)}")
+        logger.info(f"Longitud Limpia: {len(df_inicial_filtrado)}")
+        logger.info(f"Diferencia: {len(df) - len(df_inicial_filtrado)}")
+
+        return df_inicial_filtrado.copy()
 
     def procesar_dataframe(
         self, df: pd.DataFrame
@@ -227,10 +249,10 @@ class NLPService:
         stop_words = list(self.config.get("stop_words", {}).keys())
 
         config_vectorizador = {
-            "max_features": 10000,
+            # "max_features": 10000,
             "lowercase": True,
             "stop_words": stop_words if stop_words else None,
-            "token_pattern": r"(?u)\b[a-zA-Záéíóúñ&]{1,}\b",
+            "token_pattern": r"(?u)\b[a-záéíóúñ&]{1,}\b",
             "strip_accents": "unicode",
             "norm": "l2",
             "use_idf": True,

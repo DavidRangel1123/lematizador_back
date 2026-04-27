@@ -256,8 +256,20 @@ class ProjectService:
         if missing:
             raise ValueError(f"El archivo no tiene las columnas requeridas: {missing}")
 
-        # Inicializar servicio NLP
-        nlp_service = NLPService(project_path, self.nlp)
+        try:
+            logger.info(f"Creando NLPService con project_path: {project_path}")
+            logger.info(f"Tipo de self.nlp: {type(self.nlp)}")
+
+            nlp_service = NLPService(project_path, self.nlp)
+
+            logger.info("NLPService creado exitosamente")
+
+        except Exception as e:
+            logger.error(f"Error AL CREAR NLPService: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            raise ValueError(f"Error al inicializar NLPService: {str(e)}")
+
+        df = nlp_service.clean_nulls(df)
 
         # Procesar - CON 7 VARIABLES
         (
@@ -295,9 +307,15 @@ class ProjectService:
             "vocabulario": vocabulario_paths,
             "modelos": modelos_paths,
             "estadisticas": {
+                "documentos_procesados": vectores_corporales.shape[0],
                 "corporal_terminos": len(palabras_corporal),
                 "indumentaria_terminos": len(palabras_indumentaria),
-                "total_terminos": len(palabras_corporal) + len(palabras_indumentaria),
+                "No-Zero Values Corporal": vectores_corporales.nnz,
+                "Densidad Matriz Corporal": vectores_corporales.nnz
+                / (vectores_corporales.shape[0] * vectores_corporales.shape[1]),
+                "No-Zero Values Indumentaria": vectores_indumentaria.nnz,
+                "Densidad Matriz Indumentaria": vectores_indumentaria.nnz
+                / (vectores_indumentaria.shape[0] * vectores_indumentaria.shape[1]),
             },
             "used_memory_cache": used_memory_cache,
         }

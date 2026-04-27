@@ -1,0 +1,24 @@
+{
+  "fecha_creacion": "2026-04-21T21:46:30.036126",
+  "project_id": "IJCF",
+  "dimensiones_corporal": [
+    6406,
+    5883
+  ],
+  "dimensiones_indumentaria": [
+    6406,
+    4763
+  ],
+  "n_documentos": 6406,
+  "densidad_corporal": 0.0018947634773599819,
+  "densidad_indumentaria": 0.0015231822937358812,
+  "max_features": 10000,
+  "vectorizador_config": {
+    "lowercase": true,
+    "stop_words": [],
+    "norm": "l2",
+    "use_idf": true,
+    "smooth_idf": true,
+    "sublinear_tf": true
+  }
+}
