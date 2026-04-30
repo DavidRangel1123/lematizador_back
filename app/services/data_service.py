@@ -187,18 +187,21 @@ class ProjectService:
             logger.error(f"Traceback: {traceback.format_exc()}")
             raise ValueError(f"Error al inicializar NLPService: {str(e)}")
 
-        df = nlp_service.clean_nulls(df)
+        # df = nlp_service.clean_nulls(df)
 
         # Procesar - CON 7 VARIABLES
-        (
-            df_procesado,
-            vec_corporal,
-            vec_indumentaria,
-            vectores_corporales,
-            vectores_indumentaria,
-            palabras_corporal,
-            palabras_indumentaria,
-        ) = nlp_service.procesar_dataframe(df)
+        try:
+            (
+                df_procesado,
+                vec_corporal,
+                vec_indumentaria,
+                vectores_corporales,
+                vectores_indumentaria,
+                palabras_corporal,
+                palabras_indumentaria,
+            ) = nlp_service.procesar_dataframe(df)
+        except Exception as e:
+            logger.error(f"Error procesando df: {str(e)}\n{traceback.format_exc()}")
 
         # Guardar dataframe procesado
         procesado_path = self.file_utils.save_dataframe(

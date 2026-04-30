@@ -101,6 +101,11 @@ class NLPService:
         texto = re.sub(r"S/D", " ", texto)
         texto = re.sub(r"S/N", " ", texto)
         texto = re.sub(r"SIN DATO", " ", texto)
+        texto = re.sub(r"\*SE AGOTA INFORMACION DEL EXPEDIENTE", " ", texto)
+        texto = re.sub(r"\*SE AGOTA INFORMACION DEL EXPEDIENTE", " ", texto)
+        texto = re.sub(r"\*NO SE ENCUENTRA INFORMACION EN EL EXPEDIENTE", " ", texto)
+        texto = re.sub(r"\*SE AGOTO INFORMACION DEL EXPEDIENTE", " ", texto)
+        texto = re.sub(r"SE AGOTO INFORMACION DEL EXPEDIENTE", " ", texto)
         # texto = re.sub(r"_x000d", " ", texto)
         texto = re.sub(r"•", " ", texto)
         texto = re.sub(r",", " ", texto)
@@ -199,9 +204,9 @@ class NLPService:
         return resultado
 
     def clean_nulls(self, df: pd.DataFrame) -> pd.DataFrame:
-        mascara_con_datos = df["corporal"].notna() & (df["corporal"] != "") | df[
-            "indumentaria"
-        ].notna() & (df["indumentaria"] != "")
+        mascara_con_datos = df["corporal_limpio"].notna() & (
+            df["corporal_limpio"] != ""
+        ) | df["indumentaria_limpio"].notna() & (df["indumentaria_limpio"] != "")
 
         df_inicial_filtrado = df[mascara_con_datos].copy()
         logger.info(f"Longitud Original: {len(df)}")
@@ -234,6 +239,8 @@ class NLPService:
         df["indumentaria_limpio"] = df["indumentaria"].apply(
             lambda x: self.limpiar_texto(x, diccionario_compuestos)
         )
+
+        df = self.clean_nulls(df)
 
         # Lematizar
         logger.info("Aplicando lematización...")
