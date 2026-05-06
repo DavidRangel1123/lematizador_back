@@ -1,23 +1,49 @@
 {
-  "fecha_creacion": "2026-05-06T17:51:25.898069",
+  "fecha_creacion": "2026-05-06T17:50:59.175298",
   "project_id": "COBUPEJ",
   "dimensiones_corporal": [
-    36047,
-    6177
+    35174,
+    6023
   ],
   "dimensiones_indumentaria": [
-    36047,
-    5891
+    35174,
+    6101
   ],
-  "n_documentos": 36047,
-  "densidad_corporal": 0.0009611864322674193,
-  "densidad_indumentaria": 0.0013661788062329855,
+  "n_documentos": 35174,
+  "densidad_corporal": 0.0010084350846253291,
+  "densidad_indumentaria": 0.0013517550378040985,
   "max_features": 10000,
   "vectorizador_config": {
     "lowercase": true,
     "stop_words": [
-      "cerde",
-      "contener"
+      "abundante",
+      "acabar",
+      "actual",
+      "actualmente",
+      "acudir",
+      "adaptado",
+      "adicional",
+      "adjunto",
+      "ara",
+      "ciento",
+      "cinco",
+      "contener",
+      "corresponder",
+      "crec",
+      "cuado",
+      "cuaento",
+      "cual",
+      "cuenbtir",
+      "cuent",
+      "cuestion",
+      "dicho",
+      "dijeir",
+      "dimencion",
+      "divesperso",
+      "especialmente",
+      "especificamente",
+      "especifico",
+      "inconir"
     ],
     "norm": "l2",
     "use_idf": true,
