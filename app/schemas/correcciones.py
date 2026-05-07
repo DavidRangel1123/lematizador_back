@@ -3,7 +3,7 @@ from typing import List, Optional, Literal
 
 
 # Tipo de acción permitida
-TipoAccion = Literal["separacion", "stop-word", "general", "corporal", "indumentaria"]
+TipoAccion = Literal["separacion", "stop-word", "general", "nombre", "corporal", "indumentaria"]
 
 
 class CorrectLema(BaseModel):

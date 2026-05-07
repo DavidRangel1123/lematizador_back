@@ -50,6 +50,7 @@ class NLPService:
             "correcciones_corporal": "correcciones_corporal.py",
             "correcciones_indumentaria": "correcciones_indumentaria.py",
             "separaciones": "separaciones.py",
+            "correcciones_nombres": "correcciones_nombres.py",
         }
 
         for key, filename in config_files.items():

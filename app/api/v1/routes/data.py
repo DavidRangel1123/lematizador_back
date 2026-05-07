@@ -282,6 +282,7 @@ async def add_correcciones(project_id: str, correcciones_data: CorreccionesList)
     - **general**: Va a correcciones_generales.py
     - **corporal**: Va a correcciones_corporal.py
     - **indumentaria**: Va a correcciones_indumentaria.py
+    - **nombre**: Va a correcciones_nombres.py
     """
     try:
         # Convertir Pydantic models a dicts

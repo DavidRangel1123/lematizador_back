@@ -40,3 +40,4 @@ class VocabularioCompletoResponse(BaseModel):
     total_palabras: int
     total_corporal: int
     total_indumentaria: int
+    total_nombres: int

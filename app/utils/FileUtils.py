@@ -41,6 +41,7 @@ class FileUtils:
             "correcciones_indumentaria.py",
             "correcciones_corporal.py",
             "stop_words.py",
+            "correcciones_nombres.py",
             "separaciones.py",
         ]
 
@@ -236,7 +237,7 @@ class FileUtils:
         Args:
             project_id: ID del proyecto
             word: Palabra a corregir
-            action: Tipo de acción (separacion, stop-word, general, corporal, indumentaria)
+            action: Tipo de acción (separacion, stop-word, general, corporal, indumentaria, nombre)
             correction: Corrección a aplicar (no necesaria para stop-word)
 
         Returns:
@@ -269,6 +270,11 @@ class FileUtils:
             "indumentaria": {
                 "file": "correcciones_indumentaria.py",
                 "var_name": "CORRECCIONES_INDUMENTARIA",
+                "is_list": False,
+            },
+            "nombre": {
+                "file": "correcciones_nombres.py",
+                "var_name": "CORRECCIONES_NOMBRES",
                 "is_list": False,
             },
         }
