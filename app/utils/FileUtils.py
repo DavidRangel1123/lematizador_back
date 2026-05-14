@@ -50,8 +50,13 @@ class FileUtils:
             # Nombre del objeto en mayúsculas sin extensión
             object_name = filename.replace(".py", "").upper()
 
+            if filename == "correcciones_nombres.py":
+                f_content = f"{object_name} = {{\n    \n}}\n"
+            else:
+                f_content = f"{object_name} = {{\n    \n}}\n"
+
             with open(file_path, "w", encoding="utf-8") as f:
-                f.write(f"{object_name} = {{\n    \n}}\n")
+                f.write(f_content)
 
         return {
             "project_name": project_name,
@@ -291,7 +296,7 @@ class FileUtils:
         current_data = self._read_config_file(file_path)
 
         if is_list:
-            # Para stop_words, trabajar como lista
+            # Para stop_words y nombres, trabajar como lista
             if current_data is None:
                 current_data = []
 

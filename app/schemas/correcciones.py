@@ -11,7 +11,11 @@ class CorrectLema(BaseModel):
 
     word: str = Field(..., min_length=1, description="Palabra a corregir")
     action: TipoAccion = Field(..., description="Tipo de corrección")
-    correction: str = Field(..., min_length=1, description="Corrección a aplicar")
+    correction: Optional[str] = Field(
+        None,
+        min_length=1,
+        description="Corrección a aplicar (no necesaria para stop-word o nombre)",
+    )
 
     @field_validator("word")
     @classmethod
@@ -22,7 +26,9 @@ class CorrectLema(BaseModel):
 
     @field_validator("correction")
     @classmethod
-    def validate_correction(cls, v: str) -> str:
+    def validate_correction(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
         if not v.strip():
             raise ValueError("La corrección no puede estar vacía")
         return v.strip().lower()

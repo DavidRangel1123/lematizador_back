@@ -68,6 +68,30 @@ class ProjectService:
         """
         return self.file_utils.get_vocabulario_info(project_id, tipo)
 
+    def get_correcciones_nombres(self, project_id: str) -> dict:
+        """
+        Obtiene las correcciones de nombres del proyecto.
+        """
+        try:
+            project_path = self.file_utils.get_project_path(project_id)
+            file_path = os.path.join(project_path, "correcciones_nombres.py")
+            
+            correcciones = self.file_utils._read_config_file(file_path)
+            if correcciones is None:
+                correcciones = {}
+            
+            # Devolver las claves del diccionario (los nombres registrados)
+            nombres = list(correcciones.keys())
+            
+            return {
+                "project_id": project_id,
+                "total_nombres": len(nombres),
+                "palabras": nombres,
+            }
+        except Exception as e:
+            logger.error(f"Error obteniendo correcciones_nombres: {str(e)}")
+            raise
+
     # ==================== PROCESAMIENTO ====================
     def process_column_classification(
         self,

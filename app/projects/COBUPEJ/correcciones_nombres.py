@@ -1,1 +1,1 @@
-CORRECCIONES_NOMBRES = {'emmanuel': 'emanuel'}
+CORRECCIONES_NOMBRES = { }

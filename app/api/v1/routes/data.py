@@ -272,6 +272,29 @@ async def get_vocabulario(
         )
 
 
+@router.get("/{project_id}/correcciones_nombres", status_code=status.HTTP_200_OK)
+async def get_correcciones_nombres(
+    project_id: str,
+    tipo: str = Query(None, description="Tipo (ignorado, solo para compatibilidad)")
+):
+    """
+    Devuelve las palabras registradas en correcciones_nombres.py.
+    """
+    try:
+        result = project_service.get_correcciones_nombres(project_id)
+
+        return {"status": "success", **result}
+
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener correcciones de nombres: {str(e)}",
+        )
+
 @router.post("/{project_id}/correcciones", status_code=status.HTTP_200_OK)
 async def add_correcciones(project_id: str, correcciones_data: CorreccionesList):
     """
@@ -282,7 +305,7 @@ async def add_correcciones(project_id: str, correcciones_data: CorreccionesList)
     - **general**: Va a correcciones_generales.py
     - **corporal**: Va a correcciones_corporal.py
     - **indumentaria**: Va a correcciones_indumentaria.py
-    - **nombre**: Va a correcciones_nombres.py
+    - **nombre**: Va a correcciones_nombres.py (no se usa para lematización)
     """
     try:
         # Convertir Pydantic models a dicts
