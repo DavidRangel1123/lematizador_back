@@ -26,7 +26,9 @@ class ProjectSessionService:
             cls._instance._current_file_type = None
         return cls._instance
 
-    def open_project(self, project_id: str, file_utils) -> dict:
+    def open_project(
+        self, project_id: str, file_utils, force_reload: bool = False
+    ) -> dict:
         """
         Abre un proyecto y carga su DataFrame en memoria.
         Prioriza _procesado si existe, sino _completo.
@@ -34,6 +36,7 @@ class ProjectSessionService:
         Args:
             project_id: ID del proyecto
             file_utils: Instancia de FileUtils para leer archivos
+            force_reload: Si es True, recarga el proyecto aunque ya esté abierto
 
         Returns:
             Dict con información del proyecto abierto
@@ -46,13 +49,23 @@ class ProjectSessionService:
             self.close_project()
             logger.info(f"Proyecto anterior cerrado")
 
-        # Si ya es el mismo proyecto, solo retornar info
+        # Si ya es el mismo proyecto y no se fuerza recarga, retornar info
         if (
             self._current_project_id == project_id
             and self._current_dataframe is not None
+            and not force_reload
         ):
             logger.info(f"Proyecto '{project_id}' ya estaba abierto")
             return self.get_session_info()
+
+        # Si se fuerza recarga del mismo proyecto, cerrarlo antes de volver a abrir
+        if (
+            self._current_project_id == project_id
+            and self._current_dataframe is not None
+            and force_reload
+        ):
+            logger.info(f"Forzando recarga del proyecto '{project_id}'")
+            self.close_project()
 
         # Buscar archivo en orden de prioridad: _procesado, luego _completo
         file_path = None

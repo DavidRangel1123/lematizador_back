@@ -116,14 +116,22 @@ async def upload_file(
 
 
 @router.post("/{project_id}/open-project", status_code=status.HTTP_200_OK)
-async def open_project(project_id: str):
+async def open_project(
+    project_id: str,
+    force_reload: bool = Query(
+        False,
+        description="Forzar recarga si el proyecto ya estaba abierto",
+    ),
+):
     """
     Abre un proyecto y carga su DataFrame en memoria.
     Solo permite un proyecto abierto a la vez.
     Si hay otro proyecto abierto, lo cierra automáticamente.
     """
     try:
-        result = project_session.open_project(project_id, project_service.file_utils)
+        result = project_session.open_project(
+            project_id, project_service.file_utils, force_reload=force_reload
+        )
 
         return {
             "status": "success",
@@ -275,7 +283,7 @@ async def get_vocabulario(
 @router.get("/{project_id}/correcciones_nombres", status_code=status.HTTP_200_OK)
 async def get_correcciones_nombres(
     project_id: str,
-    tipo: str = Query(None, description="Tipo (ignorado, solo para compatibilidad)")
+    tipo: str = Query(None, description="Tipo (ignorado, solo para compatibilidad)"),
 ):
     """
     Devuelve las palabras registradas en correcciones_nombres.py.
@@ -294,6 +302,7 @@ async def get_correcciones_nombres(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener correcciones de nombres: {str(e)}",
         )
+
 
 @router.post("/{project_id}/correcciones", status_code=status.HTTP_200_OK)
 async def add_correcciones(project_id: str, correcciones_data: CorreccionesList):
@@ -357,8 +366,24 @@ async def search_lemas(
 async def search_lema_and_get_limpio(
     tipo: str = Query(..., description="Tipo: 'corporal' o 'indumentaria'"),
     lema: str = Query(..., description="Palabra a buscar", min_length=1),
+    project_id: str = Query(None, description="ID del proyecto para abrir o recargar"),
+    force_reload: bool = Query(
+        False,
+        description="Forzar recarga del proyecto abierto antes de buscar",
+    ),
 ):
     try:
+        if project_id:
+            project_session.open_project(
+                project_id,
+                project_service.file_utils,
+                force_reload=force_reload,
+            )
+        elif not project_session.is_open():
+            raise ValueError(
+                "No hay ningún proyecto abierto. Usa /open-project primero."
+            )
+
         logger.info(f"Buscando lema: '{lema}', tipo: '{tipo}'")
         result = project_session.search_lema_and_get_limpio(tipo, lema)
         logger.info(f"Resultado encontrado: {result['total_encontrados']} registros")

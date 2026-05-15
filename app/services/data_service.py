@@ -75,14 +75,14 @@ class ProjectService:
         try:
             project_path = self.file_utils.get_project_path(project_id)
             file_path = os.path.join(project_path, "correcciones_nombres.py")
-            
+
             correcciones = self.file_utils._read_config_file(file_path)
             if correcciones is None:
                 correcciones = {}
-            
+
             # Devolver las claves del diccionario (los nombres registrados)
             nombres = list(correcciones.keys())
-            
+
             return {
                 "project_id": project_id,
                 "total_nombres": len(nombres),
@@ -271,6 +271,18 @@ class ProjectService:
         """
         try:
             self.file_utils.add_correcciones(project_id, correcciones)
+
+            if (
+                project_session.is_open()
+                and project_session.get_current_project_id() == project_id
+            ):
+                logger.info(
+                    f"Proyecto '{project_id}' abierto en sesión, forzando recarga luego de correcciones"
+                )
+                project_session.open_project(
+                    project_id, self.file_utils, force_reload=True
+                )
+
             return {
                 "success": True,
             }
