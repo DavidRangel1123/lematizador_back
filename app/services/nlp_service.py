@@ -74,6 +74,50 @@ class NLPService:
 
         return config
 
+    def _construir_grupos_nombres(self) -> Dict[str, List[str]]:
+        """
+        Construye grupos de nombres conectados desde correcciones_nombres.
+        Retorna un diccionario donde cada nombre apunta a su grupo completo.
+        """
+        correcciones = self.config.get("correcciones_nombres", {})
+        grupos = {}
+        
+        # Crear grafo bidireccional
+        grafo = {}
+        for nombre, referencia in correcciones.items():
+            nombre_lower = nombre.lower()
+            referencia_lower = referencia.lower()
+            
+            if nombre_lower not in grafo:
+                grafo[nombre_lower] = set()
+            if referencia_lower not in grafo:
+                grafo[referencia_lower] = set()
+            
+            grafo[nombre_lower].add(referencia_lower)
+            grafo[referencia_lower].add(nombre_lower)
+        
+        # Encontrar componentes conectados
+        visitados = set()
+        
+        def dfs(nodo, componente):
+            if nodo in visitados:
+                return
+            visitados.add(nodo)
+            componente.add(nodo)
+            for vecino in grafo.get(nodo, set()):
+                dfs(vecino, componente)
+        
+        for nombre in grafo:
+            if nombre not in visitados:
+                componente = set()
+                dfs(nombre, componente)
+                # Ordenar para consistencia
+                grupo_ordenado = sorted(componente)
+                for n in componente:
+                    grupos[n] = grupo_ordenado
+        
+        return grupos
+
     def _normalizar_diccionario_compuestos(self) -> Dict:
         """Normaliza el diccionario de compuestos."""
         diccionario = self.config.get("separaciones", {})
@@ -164,6 +208,7 @@ class NLPService:
         # Procesar con spaCy
         doc = self.nlp(texto.lower())
         stop_words = self.config.get("stop_words", {})
+        grupos_nombres = self._construir_grupos_nombres()
 
         tokens_procesados = []
 
@@ -179,6 +224,18 @@ class NLPService:
 
                 lema = token.lemma_
                 texto_original = token.text.lower()
+
+                # Verificar si es un nombre registrado
+                if texto_original in grupos_nombres:
+                    # Expandir con todas las variantes del nombre
+                    variantes = grupos_nombres[texto_original]
+                    # Mantener el caso del token original para la primera variante
+                    primera_variante = token.text  # Caso original
+                    otras_variantes = [v for v in variantes if v != texto_original]
+                    # Agregar todas las variantes
+                    tokens_procesados.append(primera_variante)
+                    tokens_procesados.extend(otras_variantes)
+                    continue  # No aplicar otras correcciones a nombres
 
                 # Aplicar correcciones manuales
                 if aplicar_correcciones:
