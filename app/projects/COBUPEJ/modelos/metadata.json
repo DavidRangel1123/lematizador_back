@@ -1,17 +1,17 @@
 {
-  "fecha_creacion": "2026-05-06T17:50:59.175298",
+  "fecha_creacion": "2026-05-21T20:20:57.181806",
   "project_id": "COBUPEJ",
   "dimensiones_corporal": [
     35174,
-    6023
+    6006
   ],
   "dimensiones_indumentaria": [
     35174,
-    6101
+    5450
   ],
   "n_documentos": 35174,
-  "densidad_corporal": 0.0010084350846253291,
-  "densidad_indumentaria": 0.0013517550378040985,
+  "densidad_corporal": 0.0010112515940684473,
+  "densidad_indumentaria": 0.0015113592556637175,
   "max_features": 10000,
   "vectorizador_config": {
     "lowercase": true,
