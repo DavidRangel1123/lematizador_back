@@ -1,1 +1,1 @@
-CORRECCIONES_NOMBRES = {}
+CORRECCIONES_NOMBRES = {'bere': 'berenice', 'berenice': 'bere', 'brian': 'brayan', 'brayan': 'braian', 'britani': 'britany', 'britany': 'britani', 'cami': 'camila', 'camila': 'cami', 'camy': 'camila', 'citlali': 'citlaly', 'citlalli': 'citlaly', 'citlaly': 'citlalli', 'yareli': 'yarely', 'yarely': 'yareli', 'yoselin': 'yoseline', 'yoseline': 'yoselin'}
